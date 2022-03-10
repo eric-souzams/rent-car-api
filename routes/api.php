@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::apiResource('clientes', 'App\Http\Controllers\ClienteController');
+Route::apiResource('carros', 'App\Http\Controllers\CarroController');
+Route::apiResource('locacoes', 'App\Http\Controllers\LocacaoController');
+Route::apiResource('marcas', 'App\Http\Controllers\MarcaController');
+Route::apiResource('modelos', 'App\Http\Controllers\ModeloController');

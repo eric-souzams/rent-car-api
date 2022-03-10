@@ -8,6 +8,13 @@ use App\Http\Requests\Marca\UpdateMarcaRequest;
 
 class MarcaController extends Controller
 {
+    public Marca $model;
+
+    public function __construct(Marca $marca)
+    {
+        $this->model = $marca;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,17 +22,9 @@ class MarcaController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $marcas = $this->model->all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json($marcas, 200);
     }
 
     /**
@@ -36,51 +35,72 @@ class MarcaController extends Controller
      */
     public function store(StoreMarcaRequest $request)
     {
-        //
+        $payload = $request->validated();
+
+        $image_urn = $request->file('image')->store('images', 'public');
+
+        $result = $this->model->create([
+            'nome' => $payload['nome'],
+            'image' => $image_urn
+        ]);
+
+        return $result;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Marca  $marca
+     * @param  Integer  $marcaId
      * @return \Illuminate\Http\Response
      */
-    public function show(Marca $marca)
+    public function show(int $marcaId)
     {
-        //
-    }
+        $marca = $this->model->find($marcaId);
+        
+        if ($marca === null) {
+            return response()->json(['erro' => 'Marca não encontrada.'], 404);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Marca  $marca
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Marca $marca)
-    {
-        //
+        return response()->json($marca, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateMarcaRequest  $request
-     * @param  \App\Models\Marca  $marca
+     * @param  Integer  $marcaId
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMarcaRequest $request, Marca $marca)
+    public function update(UpdateMarcaRequest $request, int $marcaId)
     {
-        //
+        $marca = $this->model->find($marcaId);
+        
+        if ($marca === null) {
+            return response()->json(['erro' => 'Marca não encontrada.'], 404);
+        }
+        
+        $payload = $request->validated();
+        $marca->update($payload);
+
+        return response()->json($marca, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Marca  $marca
+     * @param  Integer  $marcaId
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Marca $marca)
+    public function destroy(int $marcaId)
     {
-        //
+        $marca = $this->model->find($marcaId);
+
+        if ($marca === null) {
+            return response()->json(['erro' => 'Marca não encontrada.'], 404);
+        }
+
+        $marca->delete();
+
+        return response()->json(['msg' => 'A marca foi removida com sucesso.'], 200);
     }
 }
