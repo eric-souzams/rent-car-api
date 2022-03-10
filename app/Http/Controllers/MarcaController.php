@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Marca;
 use App\Http\Requests\Marca\StoreMarcaRequest;
 use App\Http\Requests\Marca\UpdateMarcaRequest;
+use Illuminate\Support\Facades\Storage;
 
 class MarcaController extends Controller
 {
@@ -80,7 +81,18 @@ class MarcaController extends Controller
         }
         
         $payload = $request->validated();
-        $marca->update($payload);
+
+        //delete old image file
+        if ($request->file('image')) {
+            Storage::disk('public')->delete($marca->image);
+        }
+
+        $image_urn = $request->file('image')->store('images', 'public');
+
+        $marca->update([
+            'nome' => $payload['nome'],
+            'image' => $image_urn
+        ]);
 
         return response()->json($marca, 200);
     }
@@ -98,6 +110,9 @@ class MarcaController extends Controller
         if ($marca === null) {
             return response()->json(['erro' => 'Marca não encontrada.'], 404);
         }
+
+        //delete saved image file
+        Storage::disk('public')->delete($marca->image);
 
         $marca->delete();
 
