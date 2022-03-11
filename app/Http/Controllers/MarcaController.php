@@ -82,17 +82,23 @@ class MarcaController extends Controller
         
         $payload = $request->validated();
 
-        $image_urn = $request->file('image')->store('images/marcas', 'public');
+        if ($request->hasFile('image')) {
+            $image_urn = $request->file('image')->store('images/marcas', 'public');
+        }
         
         //delete old image file
         if ($request->file('image')) {
             Storage::disk('public')->delete($marca->image);
         }
 
-        $marca->update([
-            'nome' => $payload['nome'],
-            'image' => $image_urn
-        ]);
+        $marca->fill($payload);
+        if ($request->hasFile('image')) { $marca->image = $image_urn; }
+        $marca->save();
+
+        // $marca->update([
+        //     'nome' => $payload['nome'],
+        //     'image' => $image_urn
+        // ]);
 
         return response()->json($marca, 200);
     }

@@ -87,22 +87,18 @@ class ModeloController extends Controller
 
         $payload = $request->validated();
 
-        $image_urn = $request->file('imagem')->store('images/modelos', 'public');
+        if ($request->hasFile('image;')) {
+            $image_urn = $request->file('imagem')->store('images/modelos', 'public');
+        }
         
         //delete old image file
         if ($request->file('image')) {
             Storage::disk('public')->delete($modelo->imagem);
         }
 
-        $this->model->update([
-            'marca_id' => $payload['marca_id'],
-            'nome' => $payload['nome'],
-            'imagem' => $image_urn,
-            'numero_portas' => $payload['numero_portas'],
-            'lugares' => $payload['lugares'],
-            'air_bag' => $payload['air_bag'],
-            'abs' => $payload['abs']
-        ]);
+        $modelo->fill($payload);
+        if ($request->hasFile('imagem')) { $modelo->imagem = $image_urn; }
+        $modelo->save();
 
         return response()->json($modelo, 200);
     }
