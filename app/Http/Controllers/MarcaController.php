@@ -38,7 +38,7 @@ class MarcaController extends Controller
     {
         $payload = $request->validated();
 
-        $image_urn = $request->file('image')->store('images', 'public');
+        $image_urn = $request->file('image')->store('images/marcas', 'public');
 
         $result = $this->model->create([
             'nome' => $payload['nome'],
@@ -82,12 +82,12 @@ class MarcaController extends Controller
         
         $payload = $request->validated();
 
+        $image_urn = $request->file('image')->store('images/marcas', 'public');
+        
         //delete old image file
         if ($request->file('image')) {
             Storage::disk('public')->delete($marca->image);
         }
-
-        $image_urn = $request->file('image')->store('images', 'public');
 
         $marca->update([
             'nome' => $payload['nome'],

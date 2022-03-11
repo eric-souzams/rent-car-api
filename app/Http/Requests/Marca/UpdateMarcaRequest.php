@@ -26,7 +26,7 @@ class UpdateMarcaRequest extends FormRequest
     {
         return [
             'nome' => 'required|string|min:3', Rule::unique('nome')->ignore($this->id),
-            'image' => 'required|file|mimes:jpg,png'
+            'image' => 'required|file|mimes:jpg,png,jpeg'
         ];
     }
     

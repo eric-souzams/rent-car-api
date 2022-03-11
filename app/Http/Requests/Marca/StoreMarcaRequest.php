@@ -25,7 +25,7 @@ class StoreMarcaRequest extends FormRequest
     {
         return [
             'nome' => 'required|string|min:3|unique:marcas',
-            'image' => 'required|file|mimes:jpg,png'
+            'image' => 'required|file|mimes:jpg,png,jpeg'
         ];
     }
 
