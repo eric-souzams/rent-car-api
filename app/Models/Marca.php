@@ -15,4 +15,9 @@ class Marca extends Model
         'nome',
         'image'
     ];
+
+    public function modelos()
+    {
+        return $this->hasMany('App\Models\Modelo');
+    }
 }

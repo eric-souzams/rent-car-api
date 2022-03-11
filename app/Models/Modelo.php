@@ -20,4 +20,9 @@ class Modelo extends Model
         'air_bag',
         'abs'
     ];
+
+    public function marca()
+    {
+        return $this->belongsTo('App\Models\Marca');
+    }
 }

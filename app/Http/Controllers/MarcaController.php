@@ -23,7 +23,7 @@ class MarcaController extends Controller
      */
     public function index()
     {
-        $marcas = $this->model->all();
+        $marcas = $this->model->with('modelos')->get();
 
         return response()->json($marcas, 200);
     }
@@ -56,7 +56,7 @@ class MarcaController extends Controller
      */
     public function show(int $marcaId)
     {
-        $marca = $this->model->find($marcaId);
+        $marca = $this->model->with('modelos')->find($marcaId);
         
         if ($marca === null) {
             return response()->json(['erro' => 'Marca não encontrada.'], 404);

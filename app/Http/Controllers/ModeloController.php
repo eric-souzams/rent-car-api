@@ -23,7 +23,7 @@ class ModeloController extends Controller
      */
     public function index()
     {
-        $modelos = $this->model->all();
+        $modelos = $this->model->with('marca')->get();
 
         return response()->json($modelos, 200);
     }
@@ -61,7 +61,7 @@ class ModeloController extends Controller
      */
     public function show(int $modeloId)
     {
-        $modelo = $this->model->find($modeloId);
+        $modelo = $this->model->with('marca')->find($modeloId);
 
         if ($modelo === null) {
             return response()->json(['erro' => 'Modelo não encontrado.'], 404);
