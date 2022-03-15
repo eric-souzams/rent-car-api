@@ -5,15 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Marca;
 use App\Http\Requests\Marca\StoreMarcaRequest;
 use App\Http\Requests\Marca\UpdateMarcaRequest;
+use App\Repositories\MarcaRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MarcaController extends Controller
 {
-    public Marca $model;
-
-    public function __construct(Marca $marca)
+    public function __construct()
     {
-        $this->model = $marca;
+        $this->model = new Marca();
+        $this->repository = new MarcaRepository($this->model);
     }
 
     /**
@@ -21,11 +22,28 @@ class MarcaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $marcas = $this->model->with('modelos')->get();
 
-        return response()->json($marcas, 200);
+        if ($request->has('filter_modelo')) {
+            $filter_modelo = $request->filter_modelo;
+            $filter_modelo = 'modelos:marca_id,'.$filter_modelo;
+            $this->repository->selectAtributosRegistrosRelacionados($filter_modelo);
+        } else {
+            $this->repository->selectAtributosRegistrosRelacionados('modelos');
+        }
+
+        if ($request->has('filter')) {
+            $this->repository->filter($request->filter);
+        }
+
+        if ($request->has('filter_marca')) {
+            $filter_marca = $request->filter_marca;
+            $filter_marca = 'id,'.$filter_marca;
+            $this->repository->selectAtributos($filter_marca);
+        }
+
+        return response()->json($this->repository->getResultado(), 200);
     }
 
     /**
