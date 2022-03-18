@@ -24,7 +24,19 @@ class StoreClienteRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'nome' => 'required|string|min:3'
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'required' => 'O campo :attribute é obrigatorio'
         ];
     }
 }

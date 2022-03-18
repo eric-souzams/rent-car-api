@@ -24,7 +24,26 @@ class StoreLocacaoRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'cliente_id' => 'required|integer|exists:clientes,id',
+            'carro_id' => 'required|integer|exists:carros,id',
+            'data_inicio_periodo' => 'required|date',
+            'data_final_previsto_previsto' => 'required|date',
+            'data_final_realizado_previsto' => 'required|date',
+            'valor_diaria' => 'required|numeric',
+            'km_inicial' => 'required|integer',
+            'km_final' => 'required|boolean'
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'required' => 'O campo :attribute é obrigatorio'
         ];
     }
 }
