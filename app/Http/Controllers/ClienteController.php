@@ -5,27 +5,34 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Http\Requests\Cliente\StoreClienteRequest;
 use App\Http\Requests\Cliente\UpdateClienteRequest;
+use App\Repositories\ClienteRepository;
+use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
+    public function __construct()
+    {
+        $this->model = new Cliente();
+        $this->repository = new ClienteRepository($this->model);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        if ($request->has('filter')) {
+            $this->repository->filter($request->filter);
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if ($request->has('filter_cliente')) {
+            $filter_cliente = $request->filter_cliente;
+            $this->repository->selectAtributos($filter_cliente);
+        }
+
+        return response()->json($this->repository->getResultado(), 200);
     }
 
     /**
@@ -36,7 +43,13 @@ class ClienteController extends Controller
      */
     public function store(StoreClienteRequest $request)
     {
-        //
+        $payload = $request->validated();
+
+        $result = $this->model->create([
+            'nome' => $payload['nome']
+        ]);
+
+        return response()->json($result, 201);
     }
 
     /**
@@ -45,20 +58,15 @@ class ClienteController extends Controller
      * @param  \App\Models\Cliente  $cliente
      * @return \Illuminate\Http\Response
      */
-    public function show(Cliente $cliente)
+    public function show(int $clienteId)
     {
-        //
-    }
+        $cliente = $this->model->find($clienteId);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Cliente  $cliente
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Cliente $cliente)
-    {
-        //
+        if ($cliente === null) {
+            return response()->json(['erro' => 'Cliente não encontrado.'], 404);
+        }
+
+        return response()->json($cliente, 200);
     }
 
     /**
@@ -68,9 +76,20 @@ class ClienteController extends Controller
      * @param  \App\Models\Cliente  $cliente
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateClienteRequest $request, Cliente $cliente)
+    public function update(UpdateClienteRequest $request, int $clienteId)
     {
-        //
+        $cliente = $this->model->find($clienteId);
+
+        if ($cliente === null) {
+            return response()->json(['erro' => 'Cliente não encontrado.'], 404);
+        }
+
+        $payload = $request->validated();
+
+        $cliente->fill($payload);
+        $cliente->save();
+
+        return response()->json($cliente, 200);
     }
 
     /**
@@ -79,8 +98,16 @@ class ClienteController extends Controller
      * @param  \App\Models\Cliente  $cliente
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Cliente $cliente)
+    public function destroy(int $clienteId)
     {
-        //
+        $cliente = $this->model->find($clienteId);
+
+        if ($cliente === null) {
+            return response()->json(['erro' => 'Cliente não encontrado.'], 404);
+        }
+
+        $cliente->delete();
+
+        return response()->json(['msg' => 'O cliente foi removido com sucesso.'], 200);
     }
 }

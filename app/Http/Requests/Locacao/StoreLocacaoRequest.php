@@ -31,7 +31,7 @@ class StoreLocacaoRequest extends FormRequest
             'data_final_realizado_previsto' => 'required|date',
             'valor_diaria' => 'required|numeric',
             'km_inicial' => 'required|integer',
-            'km_final' => 'required|boolean'
+            'km_final' => 'required|integer'
         ];
     }
 

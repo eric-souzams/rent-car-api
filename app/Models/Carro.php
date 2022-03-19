@@ -17,4 +17,9 @@ class Carro extends Model
         'disponivel',
         'km'
     ];
+
+    public function modelo()
+    {
+        return $this->belongsTo('App\Models\Modelo');
+    }
 }
